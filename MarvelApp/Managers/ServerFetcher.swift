@@ -11,12 +11,31 @@ class ServerFetcher: DataManager {
     
     // MARK: - API Requests
     
-    func getCharactersList(completion: @escaping CharactersListResult) {
+    func getCharactersList(offset: Int, sortDesc: Bool, completion: @escaping CharactersListResult) {
         // Create URL
         let url = MarvelRequest.Urls.charactersList
+    
+        // Get URL components
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            fatalError("Unable to get URL components for Marvel Request")
+        }
+    
+        // Add offset to path as a query item
+        components.queryItems?.append(URLQueryItem(name: "offset", value: String(offset)))
+        
+        // Add sort
+        let orderBy: String = {
+            return sortDesc ? CharactersList.NameOrder.desc.rawValue : CharactersList.NameOrder.asc.rawValue
+        }()
+        components.queryItems?.append(URLQueryItem(name: "orderBy", value: orderBy))
+        
+        // Get full URL
+        guard let fullUrl = components.url else {
+            fatalError("Unable to create URL components for Marvel Request")
+        }
         
         // Create and execute data task
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
+        URLSession.shared.dataTask(with: fullUrl) { (data, response, error) in
             DispatchQueue.main.async { [weak self] in
                 self?.didFetchCharactersList(data: data, response: response, error: error, completion: completion)
             }

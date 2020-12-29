@@ -22,6 +22,13 @@ struct CharactersList: Decodable {
         case list = "results"
     }
     
+    // MARK: - Internal Types
+    
+    enum NameOrder: String {
+        case asc = "name"
+        case desc = "-name"
+    }
+    
     // MARK: - Properties
     
     let offset: Int

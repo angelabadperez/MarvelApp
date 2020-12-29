@@ -15,8 +15,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="091-KG-nMU">
-                                <rect key="frame" x="188.5" y="385.5" width="37" height="37"/>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" id="091-KG-nMU">
+                                <rect key="frame" x="0.0" y="385" width="414" height="37"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </activityIndicatorView>
                             <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ef3-Wf-fns">
@@ -87,9 +88,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.66274509803921566" green="0.21568627450980393" blue="0.19607843137254902" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="091-KG-nMU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ItB-s3-J4D"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ef3-Wf-fns" secondAttribute="trailing" id="Pyy-aK-aJy"/>
-                            <constraint firstItem="091-KG-nMU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="arE-Bz-hvd"/>
                             <constraint firstItem="ef3-Wf-fns" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="iyB-vf-LLI"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ef3-Wf-fns" secondAttribute="bottom" id="oAN-qH-eue"/>
                             <constraint firstItem="ef3-Wf-fns" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="vsz-WD-9Xs"/>

@@ -16,6 +16,6 @@ protocol DataManager {
     
     // MARK: - Methods
     
-    func getCharactersList(completion: @escaping CharactersListResult)
+    func getCharactersList(offset: Int, sortDesc: Bool, completion: @escaping CharactersListResult)
     func downloadImage(url: URL, completion: @escaping ImageResult)
 }

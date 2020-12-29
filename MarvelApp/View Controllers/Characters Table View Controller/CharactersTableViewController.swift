@@ -22,6 +22,10 @@ class CharactersTableViewController: UIViewController {
     
     // MARK: -
     
+    private let sortTap = PublishSubject<Void>()
+    
+    // MARK: -
+    
     private let disposeBag = DisposeBag()
     
     // MARK: - View Life Cycle
@@ -29,8 +33,14 @@ class CharactersTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Setup Navigation Bar
+        setupNavigationBar()
+        
+        // Setup Table View
+        setupTableView()
+        
         // Initialize View Model
-        viewModel = CharactersTableViewModel(dataManager: ServerFetcher())
+        viewModel = CharactersTableViewModel(sortTap: sortTap, dataManager: ServerFetcher())
         
         // Drive Table View
         viewModel?.charactersDriver
@@ -46,19 +56,22 @@ class CharactersTableViewController: UIViewController {
         
         // Drive Table View Visibility
         viewModel?.isLoadingDriver
+            .filter { $0 == false }
             .drive(tableView.rx.isHidden)
             .disposed(by: disposeBag)
         
-        // Setup Navigation Bar
-        setupNavigationBar()
-        
-        // Setup Table View
-        setupTableView()
+        // Drive Sort Desc
+        viewModel?.sortDescDriver
+            .drive(onNext: { [weak self] sortDesc in
+                self?.setSortButton(sortDesc: sortDesc)
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - View Methods
     
     private func setupNavigationBar() {
+        // Set title, font and style
         title = "MarvelApp"
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
@@ -66,6 +79,9 @@ class CharactersTableViewController: UIViewController {
             NSAttributedString.Key.font: UIFont(name: "Bebas-Regular", size: 28.0) ?? UIFont.systemFont(ofSize: 28.0),
             NSAttributedString.Key.foregroundColor: UIColor.white
         ]
+        
+        // Set sort button on the right
+        setSortButton(sortDesc: false)
     }
     
     private func setupTableView() {
@@ -74,6 +90,40 @@ class CharactersTableViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 80.0
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !activityIndicator.isAnimating else { return }
+        
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+
+        if offsetY > contentHeight - scrollView.frame.size.height {
+            viewModel.fetchData()
+        }
+    }
+    
+    @objc func sortButtonTapped(_ sender: Any) {
+        guard !activityIndicator.isAnimating else { return } 
+        self.tableView.isHidden = true
+        self.sortTap.onNext(())
+    }
+    
+    // MARK: - Helper Methods
+    
+    func setSortButton(sortDesc: Bool) {
+        // Calculate image name based on sort state
+        let imageName: String = {
+            if sortDesc {
+                return "sort_asc"
+            } else {
+                return "sort_desc"
+            }
+        }()
+        
+        // Set right bar button
+        navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(named: imageName)?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(sortButtonTapped(_:))), animated: true)
+    }
+    
 }
 
 extension CharactersTableViewController: UITableViewDelegate, UITableViewDataSource {

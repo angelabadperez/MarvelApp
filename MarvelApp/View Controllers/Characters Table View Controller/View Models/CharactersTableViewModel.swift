@@ -27,6 +27,18 @@ class CharactersTableViewModel {
     
     // MARK: -
     
+    private(set) var offset: Int
+    
+    // MARK: -
+    
+    var sortDescDriver: Driver<Bool> {
+        sortDescRelay.asDriver()
+    }
+    
+    private let sortDescRelay = BehaviorRelay<Bool>(value: false)
+    
+    // MARK: -
+    
     var charactersDriver: Driver<[Character]> {
         charactersRelay.asDriver()
     }
@@ -47,8 +59,20 @@ class CharactersTableViewModel {
     
     // MARK: - Initialization
     
-    init(dataManager: DataManager) {
+    init(sortTap: PublishSubject<Void>, dataManager: DataManager) {
         self.dataManager = dataManager
+        self.offset = 0
+        
+        // Drive sort tap
+        sortTap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.sortDescRelay.accept(!self.sortDescRelay.value)
+                self.offset = 0
+                self.charactersRelay.accept([])
+                self.fetchData()
+            })
+            .disposed(by: disposeBag)
         
         // Fetch list of characters
         self.fetchData()
@@ -74,13 +98,11 @@ class CharactersTableViewModel {
         return CharacterViewModel(character: character, dataManager: dataManager)
     }
     
-    // MARK: - Helper Methods
-    
-    private func fetchData() {
+    func fetchData() {
         // Update loading relay
         isLoadingRelay.accept(true)
         
-        dataManager.getCharactersList { [weak self] result in
+        dataManager.getCharactersList(offset: offset, sortDesc: sortDescRelay.value) { [weak self] result in
             guard let self = self else { return }
             
             // Update loading relay
@@ -88,8 +110,11 @@ class CharactersTableViewModel {
             
             switch result {
             case .success(let charactersList):
+                // Store offset
+                self.offset += charactersList.count
+                
                 // Send characters list through the relay
-                self.charactersRelay.accept(charactersList.list)
+                self.charactersRelay.accept(self.charactersRelay.value + charactersList.list)
             case .failure(let error): break // TODO
             }
         }
