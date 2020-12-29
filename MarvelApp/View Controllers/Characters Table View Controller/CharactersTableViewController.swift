@@ -43,25 +43,25 @@ class CharactersTableViewController: UIViewController {
         viewModel = CharactersTableViewModel(sortTap: sortTap, dataManager: ServerFetcher())
         
         // Drive Table View
-        viewModel?.charactersDriver
+        viewModel.charactersDriver
             .drive(onNext: { [weak self] _ in
                 self?.tableView.reloadData()
             })
             .disposed(by: disposeBag)
         
         // Drive Activity Indicator
-        viewModel?.isLoadingDriver
+        viewModel.isLoadingDriver
             .drive(activityIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
         // Drive Table View Visibility
-        viewModel?.isLoadingDriver
+        viewModel.isLoadingDriver
             .filter { $0 == false }
             .drive(tableView.rx.isHidden)
             .disposed(by: disposeBag)
         
         // Drive Sort Desc
-        viewModel?.sortDescDriver
+        viewModel.sortDescDriver
             .drive(onNext: { [weak self] sortDesc in
                 self?.setSortButton(sortDesc: sortDesc)
             })
@@ -142,7 +142,7 @@ extension CharactersTableViewController: UITableViewDelegate, UITableViewDataSou
         }
         
         // Configure Table View Cell
-        if let viewModel = viewModel?.viewModelForCharacter(at: indexPath.row) {
+        if let viewModel = viewModel.viewModelForCharacter(at: indexPath.row) {
             cell.configure(withViewModel: viewModel)
         }
         
